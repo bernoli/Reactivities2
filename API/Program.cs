@@ -19,6 +19,17 @@ public class Program
             opt.UseSqlite(connectionString);
         });
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", // name of the policy
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader() // don't care about headers
+                        .AllowAnyMethod(); // don't care about methods
+                });
+        });
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -28,7 +39,10 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseCors("CorsPolicy");
+
         app.UseAuthorization();
+
         app.MapControllers();
 
         using var scope = app.Services.CreateScope();
